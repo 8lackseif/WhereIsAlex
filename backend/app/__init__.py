@@ -12,7 +12,7 @@ def create_app():
     from app.socket_handlers import setup_socket_events
     setup_socket_events(socketio)
 
-    # Registrar las rutas (si tienes endpoints REST)
+    # Registrar las rutas
     from app.routes import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
