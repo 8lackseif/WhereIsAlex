@@ -7,9 +7,11 @@ import { AppLayoutComponent } from "./layout/app.layout.component";
         RouterModule.forRoot([
             {
                 path: '', component: AppLayoutComponent,
-                children: []
-            },
-            { path: 'landing', loadChildren: () => import('./components/landing/landing.module').then(m => m.LandingModule) },
+                children: [
+                    { path: '', loadChildren: () => import('./components/landing/landing.module').then(m => m.LandingModule) },
+                    { path: 'map', loadChildren: () => import('./components/map/map.module').then(m => m.MapModule) }
+                ]
+            }
         ], { scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled', onSameUrlNavigation: 'reload' })
     ],
     exports: [RouterModule]
