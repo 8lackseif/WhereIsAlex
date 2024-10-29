@@ -8,8 +8,8 @@ import { AppLayoutComponent } from "./layout/app.layout.component";
             {
                 path: '', component: AppLayoutComponent,
                 children: [
-                    { path: '', loadChildren: () => import('./components/landing/landing.module').then(m => m.LandingModule) },
-                    { path: 'map', loadChildren: () => import('./components/map/map.module').then(m => m.MapModule) }
+                    { path: '', loadChildren: () => import('./demo/components/landing/landing.module').then(m => m.LandingModule) },
+                    { path: 'map/:username', loadChildren: () => import('./demo/components/map/map.module').then(m => m.MapModule) }
                 ]
             }
         ], { scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled', onSameUrlNavigation: 'reload' })

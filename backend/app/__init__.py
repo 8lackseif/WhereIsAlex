@@ -1,11 +1,14 @@
 from flask import Flask
 from flask_socketio import SocketIO
 from app.config import Config
+from flask_cors import CORS
+
 
 socketio = SocketIO()
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object(Config)
 
     # Importar los eventos de Socket.IO

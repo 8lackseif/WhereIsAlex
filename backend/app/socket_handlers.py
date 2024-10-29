@@ -1,26 +1,58 @@
-from flask_socketio import SocketIO
-from flask import request
+from flask import Flask
+from flask_socketio import SocketIO,emit
+from datetime import datetime, timedelta
+import threading
+import time
+from flask import jsonify
+import json
 
+
+user_sessions = {}
 user_locations = {}
+
+user_sessions['test'] = {'last_active': datetime.now()}
+user_locations['test'] = {'username': 'test','latitude': 40.390900, 'longitude': -3.695020}
+INACTIVITY_LIMIT = timedelta(seconds=30)
 
 def setup_socket_events(socketio: SocketIO):
     @socketio.on('connect')
     def handle_connect():
-        print(f"Usuario conectado: {request.sid}")
+        print("User connected")
+        socketio.emit('locationUpdate', user_locations)
 
     @socketio.on('sendLocation')
     def handle_location(data):
-        user_id = request.sid
-        user_locations[user_id] = {
-            'lat': data['lat'],
-            'lon': data['lon']
+        username = data['username']
+        latitude = data['latitude']
+        longitude = data['longitude']
+        user_sessions[username] = {
+            'last_active': datetime.now(),
         }
-        socketio.emit('locationUpdate', user_locations)
+        user_locations[username] = {
+            'username': username,
+            'latitude': latitude,
+            'longitude': longitude
+        }
+        print(f"Location received from {username}")
+
+    def json_serial(obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        raise TypeError(f"Type {type(obj)} not serializable")
+
+    def check_for_inactive_users():
+        while True:
+            current_time = datetime.now()
+            for username in list(user_sessions.keys()):
+                if current_time - user_sessions[username]['last_active'] > INACTIVITY_LIMIT:
+                    print(f"User {username} has been inactive. Disconnecting...")
+                    del user_sessions[username]
+                    del user_locations[username]
+                    socketio.emit('locationUpdate', user_locations)
+            time.sleep(5)
+
+    threading.Thread(target=check_for_inactive_users, daemon=True).start()
 
     @socketio.on('disconnect')
     def handle_disconnect():
-        user_id = request.sid
-        if user_id in user_locations:
-            del user_locations[user_id]
-        socketio.emit('locationUpdate', user_locations)
-        print(f"Usuario desconectado: {request.sid}")
+        print("User disconnected")
