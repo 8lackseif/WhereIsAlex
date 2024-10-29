@@ -10,8 +10,6 @@ import json
 user_sessions = {}
 user_locations = {}
 
-user_sessions['test'] = {'last_active': datetime.now()}
-user_locations['test'] = {'username': 'test','latitude': 40.390900, 'longitude': -3.695020}
 INACTIVITY_LIMIT = timedelta(seconds=30)
 
 def setup_socket_events(socketio: SocketIO):
