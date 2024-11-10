@@ -32,6 +32,7 @@ def setup_socket_events(socketio: SocketIO):
             'longitude': longitude
         }
         print(f"Location received from {username}")
+        socketio.emit('locationUpdate', user_locations)
 
     def json_serial(obj):
         if isinstance(obj, datetime):
